@@ -24,13 +24,14 @@ export function AdminLogin() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setLocation("/admin/dashboard");
+        window.location.href = "/admin/dashboard";
       } else {
         setError(data.message || "Erro ao fazer login");
       }

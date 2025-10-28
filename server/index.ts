@@ -1,5 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { Pool } from "@neondatabase/serverless";
 import { registerRoutes } from "./routes";
 import { registerAdminRoutes } from "./admin-routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -12,8 +14,19 @@ declare module 'http' {
   }
 }
 
-// Configure sessions for admin authentication
+// Create PostgreSQL session store
+const PgSession = connectPg(session);
+const sessionPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// Configure sessions for admin authentication with PostgreSQL store
 app.use(session({
+  store: new PgSession({
+    pool: sessionPool,
+    tableName: 'session',
+    createTableIfMissing: true,
+  }),
   secret: process.env.SESSION_SECRET || 'acai-prime-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
@@ -21,6 +34,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax',
   },
 }));
 

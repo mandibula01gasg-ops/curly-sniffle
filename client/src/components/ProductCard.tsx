@@ -18,112 +18,98 @@ export function ProductCard({ product, onAddToCart, hasPromo = false, promoText 
   const rating = 4.8;
   
   return (
-    <Card className={`group overflow-hidden rounded-3xl border-4 ${hasPromo ? 'border-gradient-animated' : 'border-purple-200'} hover:border-purple-400 transition-all hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-white to-purple-50/30 shadow-xl relative ${hasPromo ? 'animate-float' : ''}`} data-testid={`card-product-${product.id}`}>
-      {/* Brilho animado de fundo */}
+    <Card className={`group overflow-hidden rounded-2xl border-3 ${hasPromo ? 'border-orange-400' : 'border-purple-200'} hover:border-purple-400 transition-all hover:shadow-xl hover:-translate-y-1 bg-white shadow-lg relative`} data-testid={`card-product-${product.id}`}>
+      {/* Barra superior de promoção */}
       {hasPromo && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-200/30 via-orange-200/30 to-red-200/30 animate-gradient-shift opacity-70 rounded-3xl" />
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 animate-shimmer" />
-        </>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 animate-shimmer" />
       )}
       
       <CardContent className="p-0 relative z-10">
-        {/* Badge de promoção super chamativo */}
+        {/* Badge de promoção compacto */}
         {hasPromo && (
-          <div className="absolute top-3 left-3 z-20">
-            <Badge className="bg-gradient-to-r from-red-600 via-orange-600 to-red-600 text-white px-5 py-2 text-sm font-black rounded-full animate-pulse-glow shadow-2xl flex items-center gap-2 border-3 border-yellow-300 animate-bounce-smooth">
-              <Flame className="h-5 w-5 animate-flame" />
-              <span className="animate-text-glow">{promoText}</span>
-              <Zap className="h-5 w-5 animate-zap" />
+          <div className="absolute top-2 left-2 z-20">
+            <Badge className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+              <Flame className="h-3 w-3" />
+              <span>{promoText}</span>
             </Badge>
           </div>
         )}
 
-        {/* Badge de desconto no canto superior direito */}
+        {/* Badge de desconto compacto */}
         {hasPromo && (
-          <div className="absolute top-3 right-3 z-20">
-            <div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 text-white px-4 py-3 rounded-2xl font-black text-xl shadow-2xl animate-rotate-pulse border-4 border-white">
-              <div className="text-center">
-                <div className="text-2xl leading-none">-{discountPercent}%</div>
-                <div className="text-xs">OFF</div>
-              </div>
+          <div className="absolute top-2 right-2 z-20">
+            <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white px-2 py-1 rounded-lg font-black text-sm shadow-lg border-2 border-white">
+              -{discountPercent}%
             </div>
           </div>
         )}
         
-        <div className="aspect-square overflow-hidden bg-gradient-to-br from-purple-100 to-white relative rounded-t-3xl">
+        <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-purple-100 to-white relative rounded-t-2xl">
           <img
             src={product.image}
             alt={product.name}
-            className={`h-full w-full object-cover transition-transform duration-700 ${hasPromo ? 'group-hover:scale-125 animate-subtle-zoom' : 'group-hover:scale-110'}`}
+            className={`h-full w-full object-cover transition-transform duration-500 ${hasPromo ? 'group-hover:scale-110' : 'group-hover:scale-105'}`}
           />
-          {hasPromo && (
-            <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-500/20 animate-gradient-shift" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
         
-        <div className="p-5 space-y-3">
-          <h3 className="text-lg font-black text-gray-900 leading-tight" data-testid={`text-product-name-${product.id}`}>
+        <div className="p-4 space-y-2">
+          <h3 className="text-base font-bold text-gray-900 leading-tight" data-testid={`text-product-name-${product.id}`}>
             {product.name}
           </h3>
           
-          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-gray-600 line-clamp-1">
             {product.description}
           </p>
           
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`h-4 w-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400 animate-twinkle' : 'fill-gray-200 text-gray-200'}`} style={{ animationDelay: `${i * 0.1}s` }} />
+              <Star key={i} className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`} />
             ))}
-            <span className="text-sm text-gray-700 ml-2 font-bold">{rating}</span>
+            <span className="text-xs text-gray-700 ml-1 font-semibold">{rating}</span>
           </div>
           
-          <div className="pt-2 space-y-3">
+          <div className="pt-1 space-y-2">
             {hasPromo && (
-              <div className="flex items-center gap-2 animate-slide-right">
-                <span className="text-lg text-gray-500 line-through font-semibold">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500 line-through font-medium">
                   R$ {originalPrice.toFixed(2).replace('.', ',')}
                 </span>
-                <Badge className="bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-black px-3 py-1 rounded-full animate-bounce-smooth shadow-lg">
-                  -{discountPercent}% OFF
+                <Badge className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  -{discountPercent}%
                 </Badge>
               </div>
             )}
             
-            <div className="flex items-baseline gap-1">
-              <span className="text-sm text-gray-600 font-medium">por apenas</span>
-            </div>
-            
-            <div className={`rounded-2xl p-4 border-3 ${hasPromo ? 'bg-gradient-to-br from-green-400 via-emerald-400 to-green-500 animate-gradient-shift border-yellow-300 animate-pulse-border' : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'}`}>
-              <div className="flex items-baseline gap-2">
-                <span className={`text-4xl font-black ${hasPromo ? 'text-white drop-shadow-lg animate-price-pop' : 'text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600'}`} data-testid={`text-price-${product.id}`}>
+            <div className={`rounded-xl p-3 border-2 ${hasPromo ? 'bg-gradient-to-br from-green-500 to-emerald-600 border-yellow-400' : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'}`}>
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-600 font-medium mb-0.5">por apenas</span>
+                <span className={`text-2xl font-black ${hasPromo ? 'text-white' : 'text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600'}`} data-testid={`text-price-${product.id}`}>
                   R$ {discountedPrice.toFixed(2).replace('.', ',')}
                 </span>
               </div>
             </div>
             
             {hasPromo && (
-              <div className="flex items-center justify-center gap-2 text-base bg-gradient-to-r from-orange-100 via-yellow-100 to-orange-100 rounded-2xl py-3 px-4 border-2 border-orange-300 animate-gradient-shift shadow-lg">
-                <TrendingUp className="h-5 w-5 text-orange-600 animate-bounce-smooth" />
-                <span className="text-orange-700 font-black animate-text-pulse">
-                  🔥 OFERTA RELÂMPAGO!
+              <div className="flex items-center justify-center gap-1 text-xs bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg py-2 px-3 border border-orange-300">
+                <Flame className="h-3 w-3 text-orange-600" />
+                <span className="text-orange-700 font-bold">
+                  OFERTA RELÂMPAGO!
                 </span>
-                <Flame className="h-5 w-5 text-orange-600 animate-flame" />
               </div>
             )}
             
             <Button
               size="lg"
               onClick={() => onAddToCart(product)}
-              className={`w-full font-black rounded-2xl py-7 mt-3 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all text-lg ${
+              className={`w-full font-bold rounded-xl py-5 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm ${
                 hasPromo 
-                  ? 'bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 hover:from-orange-600 hover:via-red-600 hover:to-orange-600 text-white animate-gradient-shift animate-button-pulse' 
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white' 
                   : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white'
               }`}
               data-testid={`button-add-${product.id}`}
             >
-              {hasPromo ? '⚡ APROVEITAR OFERTA!' : '🛒 Adicionar ao Carrinho'}
+              {hasPromo ? '⚡ APROVEITAR AGORA!' : '🛒 Adicionar'}
             </Button>
           </div>
         </div>

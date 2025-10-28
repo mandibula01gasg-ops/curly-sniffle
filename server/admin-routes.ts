@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { storage } from "./storage";
 import { loginAdmin, requireAdmin, hashPassword } from "./auth";
+import { loginRateLimiter, resetLoginAttempts } from "./rate-limiter";
 import { db } from "./db";
 import { adminUsers, products, orders, reviews, analyticsEvents, transactions } from "@shared/schema";
 import { eq, desc, count, sql } from "drizzle-orm";
@@ -8,7 +9,7 @@ import { eq, desc, count, sql } from "drizzle-orm";
 export function registerAdminRoutes(app: Express) {
   
   // POST /api/admin/login - Admin login
-  app.post("/api/admin/login", async (req, res) => {
+  app.post("/api/admin/login", loginRateLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
 
@@ -26,6 +27,10 @@ export function registerAdminRoutes(app: Express) {
       req.session.adminId = admin.id;
       req.session.adminEmail = admin.email;
       req.session.adminRole = admin.role;
+
+      // Reset login attempts on successful login
+      const ip = req.ip || req.socket.remoteAddress || 'unknown';
+      resetLoginAttempts(ip);
 
       res.json({
         message: "Login realizado com sucesso",
@@ -330,6 +335,48 @@ export function registerAdminRoutes(app: Express) {
     } catch (error) {
       console.error("Error fetching transactions:", error);
       res.status(500).json({ message: "Erro ao buscar transações" });
+    }
+  });
+
+  // POST /api/seed-admin - Seed admin user (development only)
+  // IMPORTANTE: Este endpoint só funciona em modo de desenvolvimento
+  app.post("/api/seed-admin", async (req, res) => {
+    // Bloquear em produção
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ message: "Endpoint disponível apenas em desenvolvimento" });
+    }
+
+    try {
+      const existingAdmin = await db.query.adminUsers.findFirst({
+        where: eq(adminUsers.email, "admin@acaiprime.com"),
+      });
+
+      if (existingAdmin) {
+        return res.json({ message: "Admin já existe no banco de dados" });
+      }
+
+      const passwordHash = await hashPassword("admin123");
+      
+      const newAdmin = await db.insert(adminUsers)
+        .values({
+          email: "admin@acaiprime.com",
+          passwordHash,
+          name: "Administrador",
+          role: "admin",
+        })
+        .returning();
+
+      res.json({ 
+        message: "Admin criado com sucesso. ALTERE A SENHA em produção!", 
+        admin: {
+          email: newAdmin[0].email,
+          name: newAdmin[0].name,
+          role: newAdmin[0].role,
+        }
+      });
+    } catch (error) {
+      console.error("Error seeding admin:", error);
+      res.status(500).json({ message: "Erro ao criar admin" });
     }
   });
 }
